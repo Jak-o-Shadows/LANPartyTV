@@ -5,3 +5,4 @@ avatar/
 userids.txt
 #output
 *.html
+*.pyc
