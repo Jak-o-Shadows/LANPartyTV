@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Select people to view games in common</title>
+    <!---copied from jqueryui website --->
+    <link rel="stylesheet" href="jquery\jquery-ui-themes-1.11.4\jquery-ui-themes-1.11.4\themes\redmond\jquery-ui.css">
+    <script src="jquery/jquery-2.1.4.min.js"></script>
+    <script src="jquery/jquery-ui-1.11.4/jquery-ui-1.11.4/jquery-ui.js"></script>
+    <style>
+        /*Selectable stuff*/
+        #feedback { font-size: 1.4em; }
+        #selectable .ui-selecting { background: #FECA40; }
+        #selectable .ui-selected { background: #F39814; color: white; }
+        #selectable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+        #selectable li { margin: 3px; padding: 5px; float: left; width: 110px; height: 110px; font-size: 4em; text-align: center; }
+       
+        /*Invert colours of pictures when selected */
+        #selectable .ui-selected .ui-selectee {
+            -webkit-filter: invert(100%);
+            filter: invert(100%);
+        }
+        /*Main layout stuff*/
+        /*copied from https://stackoverflow.com/questions/5645986/two-column-div-layout-with-fluid-left-and-fixed-right-column */
+        #wrapper {
+        }
+        #rightcol {
+           /* float: right;*/
+        }
+        #sidebar {
+            float:left;
+            width: 500px;
+        }
+        .mycolumn {
+            max-height: 100vh; /*100% of viewport height */
+            column-width: 500px;
+            column-count: 20;
+            -moz-columns: 500px 20;
+        }
+        .avatarcolumn{
+          /*  max-height:100vh;
+            column-width: 230px;
+            column-count: 20;
+            -moz-columns: 230px 20; */
+        }
+
+ </style>
+    <script>
+        $(function() {
+            $( "#selectable" ).selectable();
+            $("#selectable").on("selectablestart", function (event, ui) {
+                event.originalEvent.ctrlKey = true;
+            });
+
+            //load magick for ajax
+            //first, store in combination: filename massive json dictionary
+            $.ajax({url:"combs/index.json", dataType: "json", success: function(data) {
+                    index = data;
+                }
+            });
+
+            //the ajax bit
+            $("button").button().click(function (event) {
+                event.preventDefault();
+                selected = [];
+                //get selected users
+                $("#selectable .ui-selected .ui-selectee").each(function() {
+                    selected.push($(this).attr("id"));
+                });
+                //cannot only select 1 user
+                if (selected.length <2){
+                    $("#content").html("Must select >1 user")
+                } else{
+                    //Sort to match pre-stored files
+                    selected.sort();
+                    selectedFile = selected.join(",");
+                    //look in index to get what file to read in
+                    //actually get the list of games in common
+                    fname = "combs/".concat(index[selectedFile], ".html");
+                    //load and set shared games
+                    $.ajax({url:fname, dataType:"html"}).done(function(data){
+                        $("#rightcol .mycolumn").html(data);
+                    });
+                }
+            });
+        });
+    </script>
+
+
+</head>
+<body>
+    <div id="wrapper">
+        <button style="margin-left: auto; margin-right: auto">Get Games in Common</button>
+        <div id="sidebar">
+            <div class="avatarcolumn">
+                <ol id="selectable">
+                    {{box}}
+                </ol>
+            </div>
+        </div>
+        <div id="rightcol">
+            <div class="mycolumn"></div>
+        </div>
+    </div>
+</body>
+</html>

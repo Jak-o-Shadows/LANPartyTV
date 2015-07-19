@@ -1,8 +1,11 @@
 # Downloaded picture folders
 app/
 avatar/
+
 #settings files
 userids.txt
+
 #output
 *.html
 *.pyc
+combs/

@@ -10,6 +10,7 @@ import sys
 
 import os
 import itertools
+import json
 
 import requests
 
@@ -104,30 +105,56 @@ def downloadGameHeader(appid, size="largest"):
 
 
 if __name__ == "__main__":
-    
+    #get information about each players games
     playerData = getUserData(userids)
     data = {x: getPlayerDataThatICareAbout(playerData[x]) for x in playerData}    #downloadAvatars(data)
     humanNames = {x: data[x]["name"] for x in data.keys()}
-    downloadAvatars(data)
+    #downloadAvatars(data)
 
     peopleGameInfo = getGamesInfo(userids)
     setsOfGames = {key: getGameSet(peopleGameInfo[key]) for key in peopleGameInfo.keys()}
 
+    #find all combinations of more than 1 player
     combsOverall = set()
     for maxNum in xrange(2, len(userids)+1):
         combinations = itertools.combinations(userids, maxNum)
         flattened = set(combinations)
         combsOverall = combsOverall.union(flattened)
-    
+    #find the games in common for each combination of players 
     gamesInCommon = {}
     for s in combsOverall:
         key = ",".join(s)
         gameSets = [setsOfGames[x] for x in s]
         gamesInCommon[key] = gameSets[0].intersection(*gameSets[1:])
-        
-    humanReadableGames = {x: humanGamesInCommon(gamesInCommon[x]) for x in gamesInCommon.keys()}
+    #humanReadableGames = {x: humanGamesInCommon(gamesInCommon[x]) for x in gamesInCommon.keys()}
     #humanReadable = {",".join([humanNames[uid] for uid in x.split(",")]): humanReadableGames[x] for x in humanReadableGames.keys()}
 
+    #Make the select people -> games in common page
+    
+    #Write the games in common for each combination
+    index = {}
+    ind = 0
+    for comb, gameList in gamesInCommon.iteritems():
+        comb = [int(uid) for uid in comb.split(",")]
+        comb.sort()
+        comb = ",".join([str(uid) for uid in comb])
+        with open(os.path.join("combs", str(ind) + ".html"), "wb") as f:
+            if len(gameList) > 0:
+                f.write(makeHTML.makeGamesList(gameList, apps))
+            else:
+                f.write("No games in common")
+        index[comb] = ind
+        ind += 1
+    with open("combs" + os.sep + "index.json", "wb") as indexFile:
+        json.dump(index, indexFile)
+    
+        
+    #make the GUI front-end
+    makeHTML.makePeopleChooser(userids, humanNames)
+
+
+
+    #find what people in common each game has
     peopleInCommon = {}
     for uid in setsOfGames.keys():
         for appid in setsOfGames[uid]:
@@ -138,6 +165,14 @@ if __name__ == "__main__":
     #pprint.pprint(peopleInCommon)
         
     makeHTML.makeHTMLPage("GameSorted", "gsorted.html", makeHTML.makeGameSortedList, peopleInCommon, apps, humanNames)
+    #makeHTML.makeGameSortedListJinja(peopleInCommon, apps, humanNames)
+    
+    
+
+        
+        
+        
+    
         
         
     #total games - every unique game between all userids
