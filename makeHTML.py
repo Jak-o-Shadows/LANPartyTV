@@ -40,7 +40,7 @@ def makePeopleChooser(userids, humanNames):
     from jinja2 import Template
     """Makes the HTML to select people, then view the common games"""
     peepLayout = """<li class="ui-state-default" id="%s">%s</li>"""
-    peepAvatarImg = """<img src="avatar/%s.png" alt="%s" id="%s" width=100px height=100px/>"""
+    peepAvatarImg = """<img src="avatar/%s.png" alt="%s" id="%s" width=70px height=70px/>"""
     people = [peepLayout % (uid, peepAvatarImg % (uid, humanNames[uid], uid)) for uid in userids]
     
     #open template, and fill it in

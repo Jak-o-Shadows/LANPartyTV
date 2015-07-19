@@ -132,6 +132,7 @@ if __name__ == "__main__":
     #Make the select people -> games in common page
     
     #Write the games in common for each combination
+    """
     index = {}
     ind = 0
     for comb, gameList in gamesInCommon.iteritems():
@@ -147,7 +148,7 @@ if __name__ == "__main__":
         ind += 1
     with open("combs" + os.sep + "index.json", "wb") as indexFile:
         json.dump(index, indexFile)
-    
+    """
         
     #make the GUI front-end
     makeHTML.makePeopleChooser(userids, humanNames)
