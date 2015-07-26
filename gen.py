@@ -16,7 +16,8 @@ import requests
 
 import makeHTML
 
-STEAMKEY = "97EF2B782B02C726352EDE18A0B2DDE1"
+with open("STEAMAPI.txt", "rb") as f:
+    STEAMKEY = f.read().rstrip("\n").lstrip(" ")
 
 appListRaw = requests.get("http://api.steampowered.com/ISteamApps/GetAppList/v0001/").json()
 appList = appListRaw["applist"]["apps"]["app"]
@@ -132,7 +133,7 @@ if __name__ == "__main__":
     #Make the select people -> games in common page
     
     #Write the games in common for each combination
-    """
+
     index = {}
     ind = 0
     for comb, gameList in gamesInCommon.iteritems():
@@ -148,7 +149,6 @@ if __name__ == "__main__":
         ind += 1
     with open("combs" + os.sep + "index.json", "wb") as indexFile:
         json.dump(index, indexFile)
-    """
         
     #make the GUI front-end
     makeHTML.makePeopleChooser(userids, humanNames)

@@ -4,6 +4,7 @@ avatar/
 
 #settings files
 userids.txt
+STEAMAPI.txt
 
 #output
 *.html
